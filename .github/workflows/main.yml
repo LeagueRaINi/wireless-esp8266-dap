@@ -9,7 +9,18 @@ on:
       - '**.md'
       - 'circuit'
     workflow_dispatch:
-
+      inputs:
+        board:
+          description: 'The Board(s) to build artifacts for'
+          required: true
+          default: 'all'
+          type: choice
+          options:
+          - esp8266
+          - esp32
+          - esp32c3
+          - esp32s3
+          - all
 # env:
 #   UPLOAD_USER_FIRMWARE: false
 
@@ -20,6 +31,11 @@ jobs:
     strategy:
       matrix:
         target-hardware: [esp8266, esp32, esp32c3, esp32s3]
+        exclude:
+          - target-hardware: ${{ github.event_name == 'workflow_dispatch' && inputs.board != 'all' && inputs.board != 'esp8266' && 'esp8266' || 'none' }}
+          - target-hardware: ${{ github.event_name == 'workflow_dispatch' && inputs.board != 'all' && inputs.board != 'esp32'   && 'esp32'   || 'none' }}
+          - target-hardware: ${{ github.event_name == 'workflow_dispatch' && inputs.board != 'all' && inputs.board != 'esp32c3' && 'esp32c3' || 'none' }}
+          - target-hardware: ${{ github.event_name == 'workflow_dispatch' && inputs.board != 'all' && inputs.board != 'esp32s3' && 'esp32s3' || 'none' }}
 
     steps:
     - uses: actions/checkout@v4
